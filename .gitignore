@@ -1,0 +1,44 @@
+# Visual Studio build artifacts
+*.obj
+*.pdb
+*.ilk
+*.exe
+*.dll
+*.lib
+*.tlog
+*.log
+*.idb
+*.pch
+*.suo
+*.sdf
+*.sln.dotsettings
+*.vcxproj.user
+*.vcxproj.filters
+*.vcxproj.*.user
+
+# Build directories
+Debug/
+Release/
+x64/
+bin/
+obj/
+
+# Visual Studio cache and temp files
+.vs/
+*.db
+
+# Dependency files (if copied manually)
+CurlWrapper.dll
+CurlWrapper.lib
+
+# Miscellaneous
+*.bak
+*.tmp
+Thumbs.db
+
+# Keep source files and essential configs
+!*.cpp
+!*.h
+!*.sln
+!*.vcxproj
+!include/
