@@ -1,53 +1,33 @@
-#include <iostream>
-#include <curl/curl.h>
-
-// Callback function to handle recieved data
-static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
-	size_t realsize = size * nmemb;
-	std::cout << (char*)contents;
-	return realsize;
-}
+#include "RestClient.h"
+#include<iostream>
 
 int main() {
-	CURL* curl;
-	CURLcode res;
+	try {
+		RestClient client;
+		
+		// Success callback
+		auto onSuccess = [](const std::string& response) {
+			std::cout << "Success Response: " << response << std::endl;
+		};
 
-	// Initialize libcurl globally (required once per application)
-	res = curl_global_init(CURL_GLOBAL_DEFAULT);
+		// Failure callback
+		auto onFailure = [](CURLcode error, const std::string& errorMsg) {
+			std::cerr << "Failed! Error code: " << error << ", Msg: " << errorMsg << std::endl;
+		};
 
-	if (res != CURLE_OK)
+		// Test Get Request (e.g., a public api)
+		std::cout << "Making GET request...\n";
+		client.get("https://google.com", onSuccess, onFailure);
+
+		// Test Post Request (e.g., a mock API)
+		std::cout << "\nMaking POST request...\n";
+		client.post("https://jsonplaceholder.typicode.com/posts", R"({"title": "foo", "body": "bar", "userId": 1})", onSuccess, onFailure);
+	}
+	catch (const std::exception& e)
 	{
-		std::cerr << "curl_global_init() failed: " << curl_easy_strerror(res) << std::endl;
+		std::cerr << "Error: " << e.what() << std::endl;
 		return 1;
 	}
 
-	// Initialize a curl session
-	curl = curl_easy_init();
-	if (!curl) {
-		std::cerr << "curl_easy_init() failed" << std::endl;
-		curl_global_cleanup();
-		return 1;
-	}
-
-	// set url to fetch
-	curl_easy_setopt(curl, CURLOPT_URL, "https://google.com");
-
-	// set the callback function to handle the response
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-
-	// perform the request
-	res = curl_easy_perform(curl);
-	if (res != CURLE_OK)
-	{
-		std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
-	}
-	else {
-		std::cout << "\nRequest Succeeded!" << std::endl;
-	}
-
-	// Cleanup
-	curl_easy_cleanup(curl);
-	curl_global_cleanup();
-
-	return (res == CURLE_OK) ? 0 : 1;
+	return 0;
 }
